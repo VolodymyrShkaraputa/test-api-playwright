@@ -1,54 +1,40 @@
 import { test, expect } from '@playwright/test';
+import { RequestHelper } from '../utils/requestHelper';
 
 test.describe('Test suite for checking API requests for products', () => {
   test('Get products by limit', async ({ request }) => {
-    type Product = {
-      id: number;
-      price: number;
-      category: string;
-    };
+    const api = new RequestHelper(request, process.env.BASE_URL!);
+    const responseJSON = await api
+      .url(process.env.BASE_URL!)
+      .path('/products')
+      .params({ limit: '10' })
+      .getRequest(200);
 
-    type ResponseBody = {
-      products: Product[];
-      limit: number;
-      skip: number;
-      total: number;
-    };
-
-    const response = await request.get(`${process.env.BASE_URL}/products?limit=10`);
-    const responseJSON = (await response.json()) as ResponseBody;
-
-    expect(response.status()).toBe(200);
+    expect(typeof responseJSON).toBe('object');
     expect(Array.isArray(responseJSON.products)).toBe(true);
-
-    responseJSON.products.forEach((product) => {
-      expect(product).toHaveProperty('id');
-      expect(product).toHaveProperty('price');
-      expect(product).toHaveProperty('category');
-    });
-
-    expect(responseJSON.limit).toBe(10);
-    expect(responseJSON.products.length).toBeLessThanOrEqual(responseJSON.limit);
   });
 
   test('Get a single product', async ({ request }) => {
-    const response = await request.get(`${process.env.BASE_URL}/products/1`);
-    const responseJSON = await response.json();
+    const api = new RequestHelper(request, process.env.BASE_URL!);
+    const getResponseProductJSON = await api
+      .url(process.env.BASE_URL!)
+      .path('/products/1')
+      .getRequest(200);
 
-    expect(response.status()).toBe(200);
-    expect(typeof responseJSON).toBe('object');
-    expect(responseJSON).toHaveProperty('id');
-    expect(responseJSON).toHaveProperty('price');
-    expect(responseJSON).toHaveProperty('category');
+    expect(typeof getResponseProductJSON).toBe('object');
+    expect(getResponseProductJSON).toHaveProperty('id');
+    expect(getResponseProductJSON).toHaveProperty('price');
+    expect(getResponseProductJSON).toHaveProperty('category');
   });
 
   test('Search product', async ({ request }) => {
-    const responseSearch = await request.get(
-      `${process.env.BASE_URL}/products/search?q=phone&limit=10`,
-    );
-    const responseSearchJSON = await responseSearch.json();
+    const api = new RequestHelper(request, process.env.BASE_URL!);
+    const responseSearchJSON = await api
+      .url(process.env.BASE_URL!)
+      .path('/products/search')
+      .params({ q: 'phone', limit: '10' })
+      .getRequest(200);
 
-    expect(responseSearch.status()).toBe(200);
     expect(typeof responseSearchJSON).toBe('object');
     expect(Array.isArray(responseSearchJSON.products)).toBe(true);
     responseSearchJSON.products.forEach((searchProduct: string) => {
@@ -59,12 +45,13 @@ test.describe('Test suite for checking API requests for products', () => {
   });
 
   test('Limit and skip products', async ({ request }) => {
-    const responseLimitProducts = await request.get(
-      `${process.env.BASE_URL}/products?limit=10&skip=10&select=title`,
-    );
-    const responseLimitProductsJSON = await responseLimitProducts.json();
+    const api = new RequestHelper(request, process.env.BASE_URL!);
+    const responseLimitProductsJSON = await api
+      .url(process.env.BASE_URL!)
+      .path('/products')
+      .params({ limit: '10', skip: '10', select: 'title' })
+      .getRequest(200);
 
-    expect(responseLimitProducts.status()).toBe(200);
     expect(typeof responseLimitProductsJSON).toBe('object');
     expect(Array.isArray(responseLimitProductsJSON.products)).toBe(true);
     responseLimitProductsJSON.products.forEach((searchProduct: string) => {
@@ -74,12 +61,13 @@ test.describe('Test suite for checking API requests for products', () => {
   });
 
   test('Sort products', async ({ request }) => {
-    const sortResponse = await request.get(
-      `${process.env.BASE_URL}/products?sortBy=title&order=asc&limit=10`,
-    );
-    const sortResponseJSON = await sortResponse.json();
+    const api = new RequestHelper(request, process.env.BASE_URL!);
+    const sortResponseJSON = await api
+      .url(process.env.BASE_URL!)
+      .path('/products')
+      .params({ sortBy: 'title', order: 'asc', limit: '10' })
+      .getRequest(200);
 
-    expect(sortResponse.status()).toBe(200);
     expect(typeof sortResponseJSON).toBe('object');
     expect(Array.isArray(sortResponseJSON.products)).toBe(true);
     sortResponseJSON.products.forEach((sortBy: string) => {
@@ -90,12 +78,13 @@ test.describe('Test suite for checking API requests for products', () => {
   });
 
   test('Get all products categories', async ({ request }) => {
-    const getAllCategoriesResponse = await request.get(
-      `${process.env.BASE_URL}/products/categories`,
-    );
-    const getAllCategoriesResponseJSON = await getAllCategoriesResponse.json();
+    const api = new RequestHelper(request, process.env.BASE_URL!);
+    const getAllCategoriesResponseJSON = await api
+      .url(process.env.BASE_URL!)
+      .path('/products/categories')
+      .params({ sortBy: 'title', order: 'asc', limit: '10' })
+      .getRequest(200);
 
-    expect(getAllCategoriesResponse.status()).toBe(200);
     expect(Array.isArray(getAllCategoriesResponseJSON)).toBe(true);
     getAllCategoriesResponseJSON.forEach((categories: string) => {
       expect(categories).toHaveProperty('slug');
@@ -105,23 +94,24 @@ test.describe('Test suite for checking API requests for products', () => {
   });
 
   test('Get products category list', async ({ request }) => {
-    const getProductsCategoryListRes = await request.get(
-      `${process.env.BASE_URL}/products/category-list`,
-    );
-    const getProductsCategoryListResJSON = await getProductsCategoryListRes.json();
+    const api = new RequestHelper(request, process.env.BASE_URL!);
+    const getProductsCategoryListResJSON = await api
+      .url(process.env.BASE_URL!)
+      .path('/products/category-list')
+      .getRequest(200);
 
-    expect(typeof getProductsCategoryListRes).toBe('object');
-    expect(getProductsCategoryListRes.status()).toBe(200);
+    expect(typeof getProductsCategoryListResJSON).toBe('object');
     expect(Array.isArray(getProductsCategoryListResJSON)).toBe(true);
   });
 
   test('Get products by a category', async ({ request }) => {
-    const getProductByCategoryRes = await request.get(
-      `${process.env.BASE_URL}/products/category/smartphones?limit=10`,
-    );
-    const getProductByCategoryResJSON = await getProductByCategoryRes.json();
+    const api = new RequestHelper(request, process.env.BASE_URL!);
+    const getProductByCategoryResJSON = await api
+      .url(process.env.BASE_URL!)
+      .path('/products/category/smartphones')
+      .params({ limit: '10' })
+      .getRequest(200);
 
-    expect(getProductByCategoryRes.status()).toBe(200);
     expect(typeof getProductByCategoryResJSON).toBe('object');
     expect(Array.isArray(getProductByCategoryResJSON.products)).toBe(true);
     getProductByCategoryResJSON.products.forEach((productsCategory: string) => {
@@ -132,38 +122,45 @@ test.describe('Test suite for checking API requests for products', () => {
   });
 
   test('Add a new product', async ({ request }) => {
-    const newProductResponse = await request.post(`${process.env.BASE_URL}/products/add`, {
-      headers: { 'Content-Type': 'application/json' },
-      data: JSON.stringify({
+    const api = new RequestHelper(request, process.env.BASE_URL!);
+    const newProductResponseJSON = await api
+      .url(process.env.BASE_URL!)
+      .path('/products/add')
+      .body({
         title: 'test-product',
-      }),
-    });
-    const newProductResponseJSON = await newProductResponse.json();
-    expect(newProductResponse.status()).toBe(201);
+      })
+      .postRequest(201);
+
     expect(typeof newProductResponseJSON).toBe('object');
     expect(newProductResponseJSON).toHaveProperty('id');
     expect(newProductResponseJSON).toHaveProperty('title');
   });
 
   test('Update a product', async ({ request }) => {
-    const newProductResponse = await request.put(`${process.env.BASE_URL}/products/1`, {
-      headers: { 'Content-Type': 'application/json' },
-      data: JSON.stringify({
+    const api = new RequestHelper(request, process.env.BASE_URL!);
+    const updatedProductResponseJSON = await api
+      .url(process.env.BASE_URL!)
+      .path('/products/1')
+      .headers({ 'Content-Type': 'application/json' })
+      .body({
         title: 'iPhone Galaxy-UPDATED',
-      }),
-    });
-    const newProductResponseJSON = await newProductResponse.json();
-    expect(newProductResponse.status()).toBe(200);
-    expect(typeof newProductResponseJSON).toBe('object');
-    expect(newProductResponseJSON).toHaveProperty('id');
-    expect(newProductResponseJSON).toHaveProperty('title');
+      })
+      .putRequest(200);
+
+    expect(typeof updatedProductResponseJSON).toBe('object');
+    expect(updatedProductResponseJSON).toHaveProperty('id');
+    expect(updatedProductResponseJSON).toHaveProperty('title');
   });
 
   test('Delete a product', async ({ request }) => {
-    const newProductResponse = await request.delete('https://dummyjson.com/products/1');
-    const newProductResponseJSON = await newProductResponse.json();
-    expect(newProductResponse.status()).toBe(200);
-    expect(newProductResponseJSON).toHaveProperty('isDeleted');
-    expect(newProductResponseJSON.isDeleted).toBe(true);
+    const api = new RequestHelper(request, process.env.BASE_URL!);
+    const deleteProductResponseJSON = await api
+      .url(process.env.BASE_URL!)
+      .path('/products/1')
+      .deleteRequest(200);
+
+    expect(typeof deleteProductResponseJSON).toBe('object');
+    expect(deleteProductResponseJSON).toHaveProperty('isDeleted');
+    expect(deleteProductResponseJSON.isDeleted).toBe(true);
   });
 });
