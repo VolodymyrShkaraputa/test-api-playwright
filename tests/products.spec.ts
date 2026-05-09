@@ -134,10 +134,6 @@ test.describe('Test suite for checking API requests for products', () => {
     expect(typeof newProductResponseJSON).toBe('object');
     expect(newProductResponseJSON).toHaveProperty('id');
     expect(newProductResponseJSON).toHaveProperty('title');
-  });
-
-  test('Update a product', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
     const updatedProductResponseJSON = await api
       .url(process.env.BASE_URL!)
       .path('/products/1')
@@ -150,10 +146,7 @@ test.describe('Test suite for checking API requests for products', () => {
     expect(typeof updatedProductResponseJSON).toBe('object');
     expect(updatedProductResponseJSON).toHaveProperty('id');
     expect(updatedProductResponseJSON).toHaveProperty('title');
-  });
 
-  test('Delete a product', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
     const deleteProductResponseJSON = await api
       .url(process.env.BASE_URL!)
       .path('/products/1')

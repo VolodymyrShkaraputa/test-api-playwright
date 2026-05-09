@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   fullyParallel: true,
   retries: 2,
-  workers: 1,
+  workers: '40%',
   reporter: [['html', { open: 'never' }]],
   timeout: 60000,
   expect: {

@@ -29,7 +29,6 @@ export class RequestHelper {
 
   headers(headers: Record<string, string>) {
     this.requestHeaders = headers;
-    console.log(this.requestHeaders);
     return this;
   }
 
@@ -43,7 +42,6 @@ export class RequestHelper {
     for (const [key, value] of Object.entries(this.queryParams)) {
       url.searchParams.append(key, value);
     }
-    console.log(url.toString());
     return url.toString();
   }
 
