@@ -2,7 +2,6 @@ import { expect } from '@playwright/test';
 // import { testWithAuth } from '../fixtures/testWithAuth';
 import { testWithAuth } from '../fixtures/testWithAuth';
 import { test } from '../fixtures/api';
-import { RequestHelper } from '../utils/requestHelper';
 
 test.describe('A set of tests to verify API requests for users', () => {
   test('Get all users', async ({ api }) => {
@@ -144,8 +143,7 @@ test.describe('A set of tests to verify API requests for users', () => {
     }
   });
 
-  test('Get users todos by user id', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Get users todos by user id', async ({ api }) => {
     const getUsersTodosJSON = await api
       .url()
       .path('/users/5/todos')
