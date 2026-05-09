@@ -12,8 +12,11 @@ export class RequestHelper {
     this.request = request;
     this.baseUrl = apiBaseUrl;
   }
-  url(url: string) {
-    this.baseUrl = url;
+  url() {
+    if (!process.env.BASE_URL) {
+      throw new Error('URL is required');
+    }
+    this.baseUrl = process.env.BASE_URL;
     return this;
   }
 

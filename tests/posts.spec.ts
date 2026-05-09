@@ -1,24 +1,21 @@
-import { test } from '@playwright/test';
-import { RequestHelper } from '../utils/requestHelper';
+import { test } from '../fixtures/api';
 import { expect } from '@playwright/test';
 
 test.describe('Tests for Posts', () => {
-  test('Get all posts', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
-    const getAllPostsJSON = await api.url(process.env.BASE_URL!).path('/posts').getRequest(200);
+  test('Get all posts', async ({ api }) => {
+    const getAllPostsJSON = await api.url().path('/posts').getRequest(200);
 
     expect(Array.isArray(getAllPostsJSON.posts)).toBe(true);
-    getAllPostsJSON.posts.forEach((postsPramenters: string) => {
-      expect(postsPramenters).toHaveProperty('id');
-      expect(postsPramenters).toHaveProperty('title');
-      expect(postsPramenters).toHaveProperty('body');
-      expect(postsPramenters).toHaveProperty('userId');
+    getAllPostsJSON.posts.forEach((postsParameters: string) => {
+      expect(postsParameters).toHaveProperty('id');
+      expect(postsParameters).toHaveProperty('title');
+      expect(postsParameters).toHaveProperty('body');
+      expect(postsParameters).toHaveProperty('userId');
     });
   });
 
-  test('Get a single post', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
-    const getPostJSON = await api.url(process.env.BASE_URL!).path('/posts/1').getRequest(200);
+  test('Get a single post', async ({ api }) => {
+    const getPostJSON = await api.url().path('/posts/1').getRequest(200);
 
     expect(getPostJSON).toHaveProperty('id', 1);
     expect(getPostJSON).toHaveProperty('title');
@@ -27,15 +24,15 @@ test.describe('Tests for Posts', () => {
     expect(getPostJSON).toHaveProperty('views');
   });
 
-  test('Search posts', async ({ request }) => {
+  test('Search posts', async ({ api }) => {
     type Post = {
       id: number;
       title: string;
       body: string;
     };
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+
     const getSearchPostJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/posts/search')
       .params({ q: 'love' })
       .getRequest(200);
@@ -47,10 +44,9 @@ test.describe('Tests for Posts', () => {
     });
   });
 
-  test('Limit and skip posts', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Limit and skip posts', async ({ api }) => {
     const getLimitAndSkipPostJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/posts/tags')
       .params({ limit: '10', skip: '10', select: 'title,reactions,userId' })
       .getRequest(200);
@@ -58,10 +54,9 @@ test.describe('Tests for Posts', () => {
     expect(typeof getLimitAndSkipPostJSON).toBe('object');
   });
 
-  test('Sort posts', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Sort posts', async ({ api }) => {
     const getSortPostJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/posts')
       .params({ sortBy: 'title', order: 'asc' })
       .getRequest(200);
@@ -69,10 +64,9 @@ test.describe('Tests for Posts', () => {
     expect(typeof getSortPostJSON).toBe('object');
   });
 
-  test('Get all posts tags', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Get all posts tags', async ({ api }) => {
     const getAllPostTagsJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/posts/tags')
       .getRequest(200);
 
@@ -84,20 +78,18 @@ test.describe('Tests for Posts', () => {
     });
   });
 
-  test('Get posts tag list', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Get posts tag list', async ({ api }) => {
     const getAllPostTagsJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/posts/tag-list')
       .getRequest(200);
 
     expect(Array.isArray(getAllPostTagsJSON)).toBe(true);
   });
 
-  test('Get posts by a tag', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Get posts by a tag', async ({ api }) => {
     const getPostByTagsJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/posts/tag/life')
       .getRequest(200);
 
@@ -112,10 +104,9 @@ test.describe('Tests for Posts', () => {
     });
   });
 
-  test('Get all posts by user id', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Get all posts by user id', async ({ api }) => {
     const getPostByTagsJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/posts/user/5')
       .getRequest(200);
 
@@ -126,10 +117,9 @@ test.describe('Tests for Posts', () => {
     expect(getPostByTagsJSON.posts[0]).toHaveProperty('tags');
   });
 
-  test('Get posts comments', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Get posts comments', async ({ api }) => {
     const getPostCommentsJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/posts/1/comments')
       .getRequest(200);
 
@@ -143,36 +133,33 @@ test.describe('Tests for Posts', () => {
     });
   });
 
-  test('Add a new post', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Add a new post', async ({ api }) => {
     const createCommentsJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/posts/add')
-      .body({title: 'I am in love with someone.', userId: 5})
+      .body({ title: 'I am in love with someone.', userId: 5 })
       .postRequest(201);
 
-    expect(createCommentsJSON).toHaveProperty('title','I am in love with someone.');
+    expect(createCommentsJSON).toHaveProperty('title', 'I am in love with someone.');
   });
 
-  test('Update a post', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Update a post', async ({ api }) => {
     const updateCommentsJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .headers({ 'Content-Type': 'application/json' })
       .path('/posts/1')
-      .body({title: 'I think I should shift to the moon'})
+      .body({ title: 'I think I should shift to the moon' })
       .putRequest(200);
 
-    expect(updateCommentsJSON).toHaveProperty('title','I think I should shift to the moon');
+    expect(updateCommentsJSON).toHaveProperty('title', 'I think I should shift to the moon');
   });
 
-  test('Delete a post', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Delete a post', async ({ api }) => {
     const deleteCommentsJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/posts/1')
       .deleteRequest(200);
 
-      expect(deleteCommentsJSON).toHaveProperty('isDeleted',true)
+    expect(deleteCommentsJSON).toHaveProperty('isDeleted', true);
   });
 });

@@ -1,14 +1,13 @@
 import { expect } from '@playwright/test';
 // import { testWithAuth } from '../fixtures/testWithAuth';
 import { testWithAuth } from '../fixtures/testWithAuth';
-import { test } from '@playwright/test';
+import { test } from '../fixtures/api';
 import { RequestHelper } from '../utils/requestHelper';
 
 test.describe('A set of tests to verify API requests for users', () => {
-  test('Get all users', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Get all users', async ({ api }) => {
     const getAllUsersResponseJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/users')
       .getRequest(200);
     expect(Array.isArray(getAllUsersResponseJSON.users)).toBe(true);
@@ -21,10 +20,9 @@ test.describe('A set of tests to verify API requests for users', () => {
     });
   });
 
-  test('Login user and get tokens', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Login user and get tokens', async ({ api }) => {
     const loginUserResponseJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/user/login')
       .body({
         username: process.env.BASE_USERNAME,
@@ -43,7 +41,7 @@ test.describe('A set of tests to verify API requests for users', () => {
 
   testWithAuth('Get current authenticated user', async ({ accessToken, requestHelper }) => {
     const getAllUsersResponseJSON = await requestHelper
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/user/me')
       .headers({ Authorization: `Bearer ${accessToken}` })
       .getRequest(200);
@@ -56,10 +54,9 @@ test.describe('A set of tests to verify API requests for users', () => {
     expect(getAllUsersResponseJSON).toHaveProperty('role');
   });
 
-  test('Search users', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Search users', async ({ api }) => {
     const getSearchUserJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/users/search')
       .params({ q: 'John' })
       .getRequest(200);
@@ -73,10 +70,9 @@ test.describe('A set of tests to verify API requests for users', () => {
     });
   });
 
-  test('Filter users', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Filter users', async ({ api }) => {
     const getFilterUsersJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/users/filter')
       .params({ key: 'hair.color', value: 'Brown' })
       .getRequest(200);
@@ -90,10 +86,9 @@ test.describe('A set of tests to verify API requests for users', () => {
     });
   });
 
-  test('Limit and skip users', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Limit and skip users', async ({ api }) => {
     const getLimitAndSkipUsersJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/users')
       .params({ limit: '5', skip: '10', select: 'firstName' })
       .getRequest(200);
@@ -104,10 +99,9 @@ test.describe('A set of tests to verify API requests for users', () => {
     });
   });
 
-  test('Sort and order users', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Sort and order users', async ({ api }) => {
     const getLimitAndSkipUsersJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/users')
       .params({ sortBy: 'firstName', order: 'asc' })
       .getRequest(200);
@@ -121,10 +115,9 @@ test.describe('A set of tests to verify API requests for users', () => {
     });
   });
 
-  test('Get users carts by user id', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Get users carts by user id', async ({ api }) => {
     const getUsersCartsJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/users/6/carts')
       .getRequest(200);
 
@@ -134,10 +127,9 @@ test.describe('A set of tests to verify API requests for users', () => {
     expect(getUsersCartsJSON.carts[0]).toHaveProperty('discountedTotal');
   });
 
-  test('Get users posts by user id', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Get users posts by user id', async ({ api }) => {
     const getUsersPostsJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/users/5/posts')
       .getRequest(200);
 
@@ -155,17 +147,16 @@ test.describe('A set of tests to verify API requests for users', () => {
   test('Get users todos by user id', async ({ request }) => {
     const api = new RequestHelper(request, process.env.BASE_URL!);
     const getUsersTodosJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/users/5/todos')
       .getRequest(200);
 
     expect(Array.isArray(getUsersTodosJSON.todos)).toBe(true);
   });
 
-  test('Add, update,delete a new user', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Add, update,delete a new user', async ({ api }) => {
     const addUserResponseJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/users/add')
       .body({
         firstName: 'Muhammad',
@@ -182,7 +173,7 @@ test.describe('A set of tests to verify API requests for users', () => {
     expect(addUserResponseJSON).toHaveProperty('role');
 
     const updateUserResponseJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path(`/users/2`)
       .body({
         lastName: 'Owais',
@@ -197,7 +188,7 @@ test.describe('A set of tests to verify API requests for users', () => {
     expect(updateUserResponseJSON).toHaveProperty('role');
 
     const deleteUserResponseJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path(`/users/2`)
       .deleteRequest(200);
 

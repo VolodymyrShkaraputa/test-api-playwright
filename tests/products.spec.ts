@@ -1,11 +1,10 @@
-import { test, expect } from '@playwright/test';
-import { RequestHelper } from '../utils/requestHelper';
+import { test } from '../fixtures/api';
+import { expect } from '@playwright/test';
 
 test.describe('Test suite for checking API requests for products', () => {
-  test('Get products by limit', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Get products by limit', async ({ api }) => {
     const responseJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/products')
       .params({ limit: '10' })
       .getRequest(200);
@@ -14,10 +13,9 @@ test.describe('Test suite for checking API requests for products', () => {
     expect(Array.isArray(responseJSON.products)).toBe(true);
   });
 
-  test('Get a single product', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Get a single product', async ({ api }) => {
     const getResponseProductJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/products/1')
       .getRequest(200);
 
@@ -27,10 +25,9 @@ test.describe('Test suite for checking API requests for products', () => {
     expect(getResponseProductJSON).toHaveProperty('category');
   });
 
-  test('Search product', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Search product', async ({ api }) => {
     const responseSearchJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/products/search')
       .params({ q: 'phone', limit: '10' })
       .getRequest(200);
@@ -44,10 +41,9 @@ test.describe('Test suite for checking API requests for products', () => {
     });
   });
 
-  test('Limit and skip products', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Limit and skip products', async ({ api }) => {
     const responseLimitProductsJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/products')
       .params({ limit: '10', skip: '10', select: 'title' })
       .getRequest(200);
@@ -60,10 +56,9 @@ test.describe('Test suite for checking API requests for products', () => {
     });
   });
 
-  test('Sort products', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Sort products', async ({ api }) => {
     const sortResponseJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/products')
       .params({ sortBy: 'title', order: 'asc', limit: '10' })
       .getRequest(200);
@@ -77,10 +72,9 @@ test.describe('Test suite for checking API requests for products', () => {
     });
   });
 
-  test('Get all products categories', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Get all products categories', async ({ api }) => {
     const getAllCategoriesResponseJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/products/categories')
       .params({ sortBy: 'title', order: 'asc', limit: '10' })
       .getRequest(200);
@@ -93,10 +87,9 @@ test.describe('Test suite for checking API requests for products', () => {
     });
   });
 
-  test('Get products category list', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Get products category list', async ({ api }) => {
     const getProductsCategoryListResJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/products/category-list')
       .getRequest(200);
 
@@ -104,10 +97,9 @@ test.describe('Test suite for checking API requests for products', () => {
     expect(Array.isArray(getProductsCategoryListResJSON)).toBe(true);
   });
 
-  test('Get products by a category', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Get products by a category', async ({ api }) => {
     const getProductByCategoryResJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/products/category/smartphones')
       .params({ limit: '10' })
       .getRequest(200);
@@ -121,10 +113,9 @@ test.describe('Test suite for checking API requests for products', () => {
     });
   });
 
-  test('Add a new product', async ({ request }) => {
-    const api = new RequestHelper(request, process.env.BASE_URL!);
+  test('Add a new product', async ({ api }) => {
     const newProductResponseJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/products/add')
       .body({
         title: 'test-product',
@@ -135,7 +126,7 @@ test.describe('Test suite for checking API requests for products', () => {
     expect(newProductResponseJSON).toHaveProperty('id');
     expect(newProductResponseJSON).toHaveProperty('title');
     const updatedProductResponseJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/products/1')
       .headers({ 'Content-Type': 'application/json' })
       .body({
@@ -148,7 +139,7 @@ test.describe('Test suite for checking API requests for products', () => {
     expect(updatedProductResponseJSON).toHaveProperty('title');
 
     const deleteProductResponseJSON = await api
-      .url(process.env.BASE_URL!)
+      .url()
       .path('/products/1')
       .deleteRequest(200);
 
