@@ -7,7 +7,7 @@ export type TesOptions = {
 };
 
 export const test = base.extend<TesOptions>({
-  api: async ({ request }, use) => {
+  api: async ({ request }, use, testInfo) => {
     if (!process.env.BASE_URL) {
       throw new Error('BASE_URL is not defined');
     }
@@ -15,5 +15,8 @@ export const test = base.extend<TesOptions>({
     const logger = new Logger();
     const requestHelper = new RequestHelper(request, baseUrl, logger);
     await use(requestHelper);
+        if (testInfo.status !== testInfo.expectedStatus) {
+      logger.printLogs();
+    }
   },
 });

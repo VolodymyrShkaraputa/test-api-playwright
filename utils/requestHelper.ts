@@ -59,6 +59,7 @@ export class RequestHelper {
     const responseJSON = await response.json();
     this.logger.logResponse(response.status(), responseJSON);
     this.statusCheck(response.status(), statusCode, this.getRequest);
+    this.cleanUp();
     return responseJSON;
   }
 
@@ -72,6 +73,7 @@ export class RequestHelper {
     const responseJSON = await response.json();
     this.logger.logResponse(response.status(), responseJSON);
     this.statusCheck(response.status(), statusCode, this.postRequest);
+    this.cleanUp();
     return responseJSON;
   }
 
@@ -85,6 +87,7 @@ export class RequestHelper {
     const responseJSON = await response.json();
     this.logger.logResponse(response.status(), responseJSON);
     this.statusCheck(response.status(), statusCode, this.putRequest);
+    this.cleanUp();
     return responseJSON;
   }
 
@@ -97,18 +100,26 @@ export class RequestHelper {
     const responseJSON = await response.json();
     this.logger.logResponse(response.status(), responseJSON);
     this.statusCheck(response.status(), statusCode, this.deleteRequest);
+    this.cleanUp();
     return responseJSON;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   private statusCheck(actualStatus: number, expectedStatus: number, callingMethod: Function) {
     if (actualStatus !== expectedStatus) {
-      const logs = this.logger.getRecentLogs();
+
       const error = new Error(
-        `Expected status ${expectedStatus} but got ${actualStatus}. Recent logs:\n${logs}`,
+        `Expected status ${expectedStatus} but got ${actualStatus}}`,
       );
       Error.captureStackTrace(error, callingMethod);
       throw error;
     }
+  }
+
+  private cleanUp() {
+    this.apiPath = '';
+    this.queryParams = {};
+    this.requestHeaders = {};
+    this.requestBody = {};
   }
 }
